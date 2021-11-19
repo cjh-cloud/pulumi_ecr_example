@@ -1,0 +1,3 @@
+name: pulumi_ecr_example
+runtime: nodejs
+description: A minimal AWS TypeScript Pulumi program
