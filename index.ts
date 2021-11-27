@@ -10,7 +10,7 @@ const repo = new aws.ecr.Repository("my-repo");
 const imageName = repo.repositoryUrl;
 
 const customImage = "my-image"; // name of the pulumi resource
-const imageVersion = "v1.0.2"; // todo : grab from an env var, created in pipeline by semantic release
+const imageVersion = process.env.VERSION; // created in pipeline by semantic release
 
 // Build and publish the container image.
 const image = new docker.Image(customImage, {
