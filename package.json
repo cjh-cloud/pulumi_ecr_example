@@ -16,7 +16,7 @@
     },
     "scripts": {
         "release:create": "./node_modules/.bin/semantic-release",
-        "release:determine-upcoming-version": "./node_modules/.bin/semantic-release --dry-run"
+        "release:determine-new-version": "./node_modules/.bin/semantic-release --dry-run"
     },
     "release": {
         "branches": [
