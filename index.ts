@@ -24,7 +24,7 @@ const imageVersion = process.env.VERSION; // created in pipeline by semantic rel
 //!
 // Create a load balancer to listen for requests and route them to the container.
 // const listener = new awsx.elasticloadbalancingv2.NetworkListener(`${customImage}-service`, { port: 8080 });
-const listener = new awsx.lb.ApplicationListener(`${customImage}-service`, { port: 8080 });
+const listener = new awsx.lb.ApplicationListener(`${customImage}-service`, { port: 80 });
 
 // Fargate Cluster
 // const cluster = new awsx.ecs.Cluster(`${customImage}-cluster`, { vpc });
@@ -34,7 +34,7 @@ const service = new awsx.ecs.FargateService(`${customImage}-service`, {
     taskDefinitionArgs: {
         containers: {
             app: {
-                image: pulumi.interpolate`${imageName}:${imageVersion}`,
+                image: "nginx", //pulumi.interpolate`${imageName}:${imageVersion}`,
                 memory: 512,
                 portMappings: [listener],
             },
