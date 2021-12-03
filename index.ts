@@ -34,7 +34,7 @@ const service = new awsx.ecs.FargateService(`${customImage}-service`, {
     taskDefinitionArgs: {
         containers: {
             app: {
-                image: "nginx", //pulumi.interpolate`${imageName}:${imageVersion}`,
+                image: pulumi.interpolate`${imageName}:${imageVersion}`,
                 memory: 512,
                 portMappings: [listener],
             },
