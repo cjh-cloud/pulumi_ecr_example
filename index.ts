@@ -65,9 +65,9 @@ const certificateValidation = new aws.acm.CertificateValidation("certificateVali
 // Creates an ALB associated with our custom VPC.
 const alb = new awsx.lb.ApplicationLoadBalancer(`${customImage}-service`, { vpc });
 
-// Listen to HTTP traffic on port 80 and redirect to 443
+// Listen to HTTP traffic on the app port and redirect to 443 (this is to make sure the security groups are setup with the right port, and to allow the Target Group to perform health checks)
 const httpListener = alb.createListener("web-listener", { 
-    port: 80,
+    port: PORT,
     protocol: "HTTP",
     defaultAction: {
         type: "redirect",
