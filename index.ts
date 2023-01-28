@@ -9,12 +9,23 @@ const imageVersion = process.env.VERSION; // created in pipeline by semantic rel
 const repo = new aws.ecr.Repository("my-repo"); // Create a private ECR repository.
 const imageName = repo.repositoryUrl; // Get registry info (creds and endpoint)
 
+// Get the repository credentials we us to push to the repository
+const repoCreds = repo.registryId.apply(async (registryId) => {
+    const credentials = await aws.ecr.getCredentials({
+        registryId: registryId,
+    });
+    const decodedCredentials = Buffer.from(credentials.authorizationToken, "base64").toString();
+    const [username, password] = decodedCredentials.split(":");
+    return { server: credentials.proxyEndpoint, username, password };
+});
+
 // Build and publish the container image.
 let image = null;
 if (process.env.VERSION) {
     image = new docker.Image(customImage, {
         build: "app",
         imageName: pulumi.interpolate`${imageName}:${imageVersion}`,
+        registry: repoCreds,
     });
 }
 
@@ -66,7 +77,7 @@ const certificateValidation = new aws.acm.CertificateValidation("certificateVali
 const alb = new awsx.lb.ApplicationLoadBalancer(`${customImage}-service`, { vpc });
 
 // Listen to HTTP traffic on the app port and redirect to 443 (this is to make sure the security groups are setup with the right port, and to allow the Target Group to perform health checks)
-const httpListener = alb.createListener("web-listener", { 
+const httpListener = alb.createListener("web-listener", {
     port: PORT,
     protocol: "HTTP",
     defaultAction: {
@@ -111,4 +122,4 @@ const service = new awsx.ecs.FargateService(`${customImage}-service`, {
 });
 
 // Export the URL so we can easily access it.
-export const frontendURL = pulumi.interpolate `https://dev.${DOMAIN}/`;
+export const frontendURL = pulumi.interpolate`https://dev.${DOMAIN}/`;
